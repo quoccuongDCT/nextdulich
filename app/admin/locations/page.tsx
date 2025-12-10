@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { Header } from "@/components/header"
-import { AdminSidebar } from "@/components/admin-sidebar"
-import { Card, CardContent } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Input } from "@/components/ui/input"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Header } from "@/components/header";
+import { AdminSidebar } from "@/components/admin-sidebar";
+import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
 import {
   Pagination,
   PaginationContent,
@@ -15,49 +15,51 @@ import {
   PaginationNext,
   PaginationPrevious,
   PaginationEllipsis,
-} from "@/components/ui/pagination"
-import { Search, Loader2, AlertCircle, MapPin } from "lucide-react"
-import { useAuth } from "@/hooks/use-auth"
-import { getAllLocations } from "@/lib/admin-service"
-import type { ViTriViewModel } from "@/lib/types"
+} from "@/components/ui/pagination";
+import { Search, Loader2, AlertCircle, MapPin } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { getAllLocations } from "@/lib/admin-service";
+import type { ViTriViewModel } from "@/lib/types";
 
-const ITEMS_PER_PAGE = 10
+const ITEMS_PER_PAGE = 10;
 
 export default function AdminLocationsPage() {
-  const router = useRouter()
-  const { user, isAuthenticated, isLoading: authLoading } = useAuth()
-  const [locations, setLocations] = useState<ViTriViewModel[]>([])
-  const [filteredLocations, setFilteredLocations] = useState<ViTriViewModel[]>([])
-  const [searchQuery, setSearchQuery] = useState("")
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState("")
-  const [currentPage, setCurrentPage] = useState(1)
+  const router = useRouter();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const [locations, setLocations] = useState<ViTriViewModel[]>([]);
+  const [filteredLocations, setFilteredLocations] = useState<ViTriViewModel[]>(
+    []
+  );
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const fetchLocations = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const data = await getAllLocations()
-      setLocations(data)
-      setFilteredLocations(data)
-      setError("")
+      const data = await getAllLocations();
+      setLocations(data);
+      setFilteredLocations(data);
+      setError("");
     } catch (error) {
-      console.error("[v0] Error fetching locations:", error)
-      setError("Không thể tải danh sách địa điểm")
+      console.error("[v0] Error fetching locations:", error);
+      setError("Không thể tải danh sách địa điểm");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     if (!authLoading && (!isAuthenticated || user?.role !== "ADMIN")) {
-      router.push("/")
-      return
+      router.push("/");
+      return;
     }
 
     if (isAuthenticated && user?.role === "ADMIN") {
-      fetchLocations()
+      fetchLocations();
     }
-  }, [isAuthenticated, user, authLoading, router])
+  }, [isAuthenticated, user, authLoading, router]);
 
   useEffect(() => {
     if (searchQuery) {
@@ -65,37 +67,52 @@ export default function AdminLocationsPage() {
         (l) =>
           l.tenViTri.toLowerCase().includes(searchQuery.toLowerCase()) ||
           l.tinhThanh.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          l.quocGia.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
-      setFilteredLocations(filtered)
+          l.quocGia.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredLocations(filtered);
     } else {
-      setFilteredLocations(locations)
+      setFilteredLocations(locations);
     }
-    setCurrentPage(1)
-  }, [searchQuery, locations])
+    setCurrentPage(1);
+  }, [searchQuery, locations]);
 
-  const totalPages = Math.ceil(filteredLocations.length / ITEMS_PER_PAGE)
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
-  const endIndex = startIndex + ITEMS_PER_PAGE
-  const currentLocations = filteredLocations.slice(startIndex, endIndex)
+  const totalPages = Math.ceil(filteredLocations.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentLocations = filteredLocations.slice(startIndex, endIndex);
 
   const getPageNumbers = () => {
-    const pages: (number | string)[] = []
+    const pages: (number | string)[] = [];
     if (totalPages <= 7) {
       for (let i = 1; i <= totalPages; i++) {
-        pages.push(i)
+        pages.push(i);
       }
     } else {
       if (currentPage <= 3) {
-        pages.push(1, 2, 3, 4, "...", totalPages)
+        pages.push(1, 2, 3, 4, "...", totalPages);
       } else if (currentPage >= totalPages - 2) {
-        pages.push(1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages)
+        pages.push(
+          1,
+          "...",
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+          totalPages
+        );
       } else {
-        pages.push(1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages)
+        pages.push(
+          1,
+          "...",
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          "...",
+          totalPages
+        );
       }
     }
-    return pages
-  }
+    return pages;
+  };
 
   if (authLoading || isLoading) {
     return (
@@ -105,7 +122,7 @@ export default function AdminLocationsPage() {
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -126,13 +143,6 @@ export default function AdminLocationsPage() {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-
-          <Alert className="mb-6">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Lưu ý: API backend không hỗ trợ thêm/sửa/xóa địa điểm. Chỉ có thể xem danh sách.
-            </AlertDescription>
-          </Alert>
 
           <div className="mb-6">
             <div className="relative max-w-md">
@@ -155,7 +165,10 @@ export default function AdminLocationsPage() {
                     <img
                       src={
                         location.hinhAnh ||
-                        `/placeholder.svg?height=200&width=300&query=${encodeURIComponent(location.tenViTri) || "/placeholder.svg"}`
+                        `/placeholder.svg?height=200&width=300&query=${
+                          encodeURIComponent(location.tenViTri) ||
+                          "/placeholder.svg"
+                        }`
                       }
                       alt={location.tenViTri}
                       className="w-full h-full object-cover"
@@ -169,13 +182,17 @@ export default function AdminLocationsPage() {
                     <p className="text-muted-foreground text-sm">
                       {location.tinhThanh}, {location.quocGia}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-2">ID: {location.id}</p>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      ID: {location.id}
+                    </p>
                   </CardContent>
                 </Card>
               ))
             ) : (
               <div className="col-span-full text-center py-16">
-                <p className="text-lg text-muted-foreground">Không tìm thấy địa điểm nào</p>
+                <p className="text-lg text-muted-foreground">
+                  Không tìm thấy địa điểm nào
+                </p>
               </div>
             )}
           </div>
@@ -188,10 +205,14 @@ export default function AdminLocationsPage() {
                     <PaginationPrevious
                       href="#"
                       onClick={(e) => {
-                        e.preventDefault()
-                        if (currentPage > 1) setCurrentPage(currentPage - 1)
+                        e.preventDefault();
+                        if (currentPage > 1) setCurrentPage(currentPage - 1);
                       }}
-                      className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      className={
+                        currentPage === 1
+                          ? "pointer-events-none opacity-50"
+                          : "cursor-pointer"
+                      }
                     />
                   </PaginationItem>
 
@@ -205,8 +226,8 @@ export default function AdminLocationsPage() {
                         <PaginationLink
                           href="#"
                           onClick={(e) => {
-                            e.preventDefault()
-                            setCurrentPage(page as number)
+                            e.preventDefault();
+                            setCurrentPage(page as number);
                           }}
                           isActive={currentPage === page}
                           className="cursor-pointer"
@@ -214,17 +235,22 @@ export default function AdminLocationsPage() {
                           {page}
                         </PaginationLink>
                       </PaginationItem>
-                    ),
+                    )
                   )}
 
                   <PaginationItem>
                     <PaginationNext
                       href="#"
                       onClick={(e) => {
-                        e.preventDefault()
-                        if (currentPage < totalPages) setCurrentPage(currentPage + 1)
+                        e.preventDefault();
+                        if (currentPage < totalPages)
+                          setCurrentPage(currentPage + 1);
                       }}
-                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      className={
+                        currentPage === totalPages
+                          ? "pointer-events-none opacity-50"
+                          : "cursor-pointer"
+                      }
                     />
                   </PaginationItem>
                 </PaginationContent>
@@ -233,10 +259,11 @@ export default function AdminLocationsPage() {
           )}
 
           <p className="text-sm text-muted-foreground mt-6">
-            Tổng số: {filteredLocations.length} địa điểm | Trang {currentPage} / {totalPages}
+            Tổng số: {filteredLocations.length} địa điểm | Trang {currentPage} /{" "}
+            {totalPages}
           </p>
         </main>
       </div>
     </div>
-  )
+  );
 }
