@@ -48,7 +48,7 @@ export default function LocationsPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      <main className="flex-1 container px-4 py-8">
+      <main className="flex-1 container px-4 py-8 mx-auto">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Khám phá địa điểm</h1>
           <p className="text-lg text-muted-foreground">Tìm kiếm những điểm đến tuyệt vời cho chuyến đi của bạn</p>
