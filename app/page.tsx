@@ -21,13 +21,12 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="mx-auto  flex flex-col ">
       <Header />
-
-      <section className="relative h-[600px] flex items-center justify-center bg-gradient-to-br from-primary/10 via-accent/10 to-background">
+      <section className="relative h-[600px] flex items-center justify-center bg-linear-to-br from-primary/10 via-accent/10 to-background ">
         <div className="absolute inset-0 bg-[url('/images/project3.png')] bg-cover bg-center opacity-20" />
 
-        <div className="relative z-10 container px-4 text-center">
+        <div className="relative z-10 container px-4 text-center ">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 text-balance">
             Tìm chỗ ở tiếp theo cho chuyến đi của bạn
           </h1>
@@ -57,7 +56,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="py-16 bg-background">
+      <section className="py-16 bg-background mx-auto">
         <div className="container px-4">
           <h2 className="text-3xl font-bold mb-12 text-center">Tại sao chọn chúng tôi?</h2>
 
@@ -95,8 +94,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="py-16 bg-muted">
-        <div className="container px-4 text-center">
+      <section className="py-16 bg-muted ">
+        <div className="container px-4 text-center mx-auto">
           <h2 className="text-3xl font-bold mb-6">Sẵn sàng cho chuyến đi của bạn?</h2>
           <p className="text-lg text-muted-foreground mb-8">Khám phá hàng ngàn phòng độc đáo đang chờ bạn</p>
           <Button size="lg" onClick={() => router.push("/rooms")}>
@@ -105,7 +104,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <footer className="py-8 border-t border-border bg-card">
+      <footer className="py-8 border-t border-border bg-card mx-auto">
         <div className="container px-4 text-center text-sm text-muted-foreground">
           <p>&copy; 2025 Airbnb. Được xây dựng với Next.js và Tailwind CSS.</p>
         </div>

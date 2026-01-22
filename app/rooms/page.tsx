@@ -154,7 +154,7 @@ export default function RoomsPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      <main className="flex-1 container px-4 py-8">
+      <main className="flex-1 container px-4 py-8 mx-auto">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Tìm phòng</h1>
           <p className="text-lg text-muted-foreground">Khám phá hàng ngàn phòng độc đáo trên khắp thế giới</p>

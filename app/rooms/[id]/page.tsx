@@ -81,10 +81,10 @@ export default function RoomDetailPage() {
     comments.length > 0 ? (comments.reduce((sum, c) => sum + c.saoBinhLuan, 0) / comments.length).toFixed(1) : "5.0"
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background ">
       <Header />
 
-      <main className="flex-1">
+      <main className="flex-1 mx-auto max-w-[1440px] w-full">
         <div className="container px-4 py-8">
           <Button variant="ghost" className="mb-4" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4 mr-2" />

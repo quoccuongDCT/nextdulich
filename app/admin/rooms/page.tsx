@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { Header } from "@/components/header"
-import { AdminSidebar } from "@/components/admin-sidebar"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Card, CardContent } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Header } from "@/components/header";
+import { AdminSidebar } from "@/components/admin-sidebar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Dialog,
   DialogContent,
@@ -20,7 +20,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,7 +30,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
 import {
   Pagination,
   PaginationContent,
@@ -39,30 +39,51 @@ import {
   PaginationNext,
   PaginationPrevious,
   PaginationEllipsis,
-} from "@/components/ui/pagination"
-import { Search, Loader2, Trash2, Edit, Plus, AlertCircle, Eye } from "lucide-react"
-import { useAuth } from "@/hooks/use-auth"
-import { getAllRooms, createRoom, updateRoom, deleteRoom } from "@/lib/admin-service"
-import { getAllLocations } from "@/lib/location-service"
-import type { PhongViewModel, ViTriViewModel } from "@/lib/types"
+} from "@/components/ui/pagination";
+import {
+  Search,
+  Loader2,
+  Trash2,
+  Edit,
+  Plus,
+  AlertCircle,
+  Eye,
+} from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import {
+  getAllRooms,
+  createRoom,
+  updateRoom,
+  deleteRoom,
+} from "@/lib/admin-service";
+import { getAllLocations } from "@/lib/location-service";
+import type { PhongViewModel, ViTriViewModel } from "@/lib/types";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
-const ITEMS_PER_PAGE = 10
+const ITEMS_PER_PAGE = 10;
 
 export default function AdminRoomsPage() {
-  const router = useRouter()
-  const { user, isAuthenticated, isLoading: authLoading } = useAuth()
-  const [rooms, setRooms] = useState<PhongViewModel[]>([])
-  const [locations, setLocations] = useState<ViTriViewModel[]>([])
-  const [filteredRooms, setFilteredRooms] = useState<PhongViewModel[]>([])
-  const [searchQuery, setSearchQuery] = useState("")
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState("")
-  const [currentPage, setCurrentPage] = useState(1)
+  const router = useRouter();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const [rooms, setRooms] = useState<PhongViewModel[]>([]);
+  const [locations, setLocations] = useState<ViTriViewModel[]>([]);
+  const [filteredRooms, setFilteredRooms] = useState<PhongViewModel[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const [showCreateDialog, setShowCreateDialog] = useState(false)
-  const [showEditDialog, setShowEditDialog] = useState(false)
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const [selectedRoom, setSelectedRoom] = useState<PhongViewModel | null>(null)
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState<PhongViewModel | null>(null);
   const [formData, setFormData] = useState<PhongViewModel>({
     id: 0,
     tenPhong: "",
@@ -83,68 +104,88 @@ export default function AdminRoomsPage() {
     banUi: false,
     maViTri: 1,
     hinhAnh: "",
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchRooms = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const [roomsData, locationsData] = await Promise.all([getAllRooms(), getAllLocations()])
-      setRooms(roomsData)
-      setFilteredRooms(roomsData)
-      setLocations(locationsData)
-      setError("")
+      const [roomsData, locationsData] = await Promise.all([
+        getAllRooms(),
+        getAllLocations(),
+      ]);
+      setRooms(roomsData);
+      setFilteredRooms(roomsData);
+      setLocations(locationsData);
+      setError("");
     } catch (error) {
-      console.error("[v0] Error fetching data:", error)
-      setError("Không thể tải danh sách phòng")
+      console.error("[v0] Error fetching data:", error);
+      setError("Không thể tải danh sách phòng");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     if (!authLoading && (!isAuthenticated || user?.role !== "ADMIN")) {
-      router.push("/")
-      return
+      router.push("/");
+      return;
     }
 
     if (isAuthenticated && user?.role === "ADMIN") {
-      fetchRooms()
+      fetchRooms();
     }
-  }, [isAuthenticated, user, authLoading, router])
+  }, [isAuthenticated, user, authLoading, router]);
 
   useEffect(() => {
     if (searchQuery) {
-      const filtered = rooms.filter((r) => r.tenPhong.toLowerCase().includes(searchQuery.toLowerCase()))
-      setFilteredRooms(filtered)
+      const filtered = rooms.filter((r) =>
+        r.tenPhong.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+      setFilteredRooms(filtered);
     } else {
-      setFilteredRooms(rooms)
+      setFilteredRooms(rooms);
     }
-    setCurrentPage(1)
-  }, [searchQuery, rooms])
+    setCurrentPage(1);
+  }, [searchQuery, rooms]);
 
-  const totalPages = Math.ceil(filteredRooms.length / ITEMS_PER_PAGE)
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
-  const endIndex = startIndex + ITEMS_PER_PAGE
-  const currentRooms = filteredRooms.slice(startIndex, endIndex)
+  const totalPages = Math.ceil(filteredRooms.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentRooms = filteredRooms.slice(startIndex, endIndex);
 
   const getPageNumbers = () => {
-    const pages: (number | string)[] = []
+    const pages: (number | string)[] = [];
     if (totalPages <= 7) {
       for (let i = 1; i <= totalPages; i++) {
-        pages.push(i)
+        pages.push(i);
       }
     } else {
       if (currentPage <= 3) {
-        pages.push(1, 2, 3, 4, "...", totalPages)
+        pages.push(1, 2, 3, 4, "...", totalPages);
       } else if (currentPage >= totalPages - 2) {
-        pages.push(1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages)
+        pages.push(
+          1,
+          "...",
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+          totalPages,
+        );
       } else {
-        pages.push(1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages)
+        pages.push(
+          1,
+          "...",
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          "...",
+          totalPages,
+        );
       }
     }
-    return pages
-  }
+    return pages;
+  };
 
   const handleCreate = () => {
     setFormData({
@@ -167,66 +208,66 @@ export default function AdminRoomsPage() {
       banUi: false,
       maViTri: locations.length > 0 ? locations[0].id : 1,
       hinhAnh: "",
-    })
-    setShowCreateDialog(true)
-  }
+    });
+    setShowCreateDialog(true);
+  };
 
   const handleEdit = (room: PhongViewModel) => {
-    setSelectedRoom(room)
-    setFormData(room)
-    setShowEditDialog(true)
-  }
+    setSelectedRoom(room);
+    setFormData(room);
+    setShowEditDialog(true);
+  };
 
   const handleSubmitCreate = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
     try {
-      await createRoom(formData)
-      await fetchRooms()
-      setShowCreateDialog(false)
-      setError("")
+      await createRoom(formData);
+      await fetchRooms();
+      setShowCreateDialog(false);
+      setError("");
     } catch (err: any) {
-      setError(err.message || "Không thể tạo phòng")
+      setError(err.message || "Không thể tạo phòng");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleSubmitUpdate = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!selectedRoom) return
+    e.preventDefault();
+    if (!selectedRoom) return;
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      await updateRoom(selectedRoom.id, formData)
-      await fetchRooms()
-      setShowEditDialog(false)
-      setError("")
+      await updateRoom(selectedRoom.id, formData);
+      await fetchRooms();
+      setShowEditDialog(false);
+      setError("");
     } catch (err: any) {
-      setError(err.message || "Không thể cập nhật phòng")
+      setError(err.message || "Không thể cập nhật phòng");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleDeleteRoom = async () => {
-    if (!selectedRoom) return
+    if (!selectedRoom) return;
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      await deleteRoom(selectedRoom.id)
-      await fetchRooms()
-      setShowDeleteDialog(false)
+      await deleteRoom(selectedRoom.id);
+      await fetchRooms();
+      setShowDeleteDialog(false);
       if (currentRooms.length === 1 && currentPage > 1) {
-        setCurrentPage(currentPage - 1)
+        setCurrentPage(currentPage - 1);
       }
-      setError("")
+      setError("");
     } catch (err: any) {
-      setError(err.message || "Không thể xóa phòng")
+      setError(err.message || "Không thể xóa phòng");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   if (authLoading || isLoading) {
     return (
@@ -236,7 +277,7 @@ export default function AdminRoomsPage() {
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -275,11 +316,61 @@ export default function AdminRoomsPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {currentRooms.length > 0 ? (
-              currentRooms.map((room) => (
-                <Card key={room.id} className="overflow-hidden">
-                  <div className="relative h-48 bg-muted">
+          <div className="bg-card rounded-lg border border-border overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Hình ảnh</TableHead>
+                  <TableHead>Tên phòng</TableHead>
+                  <TableHead>Giá tiền</TableHead>
+                  <TableHead>Hành động</TableHead>
+                </TableRow>
+              </TableHeader>
+            </Table>
+            <TableBody>
+              {currentRooms.length > 0 ? (
+                currentRooms.map((room) => (
+                  <TableRow key={room.id} className="overflow-hidden">
+                    <TableCell>
+                      <img
+                        src={room.hinhAnh}
+                        alt={room.tenPhong}
+                        className="w-full h-full object-cover"
+                      />
+                    </TableCell>
+                    <TableCell>{room.tenPhong}</TableCell>
+                    <TableCell>${room.giaTien}</TableCell>
+                    <TableCell>{room.tenPhong}</TableCell>
+                    <div className="flex gap-2 p-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 bg-transparent"
+                        onClick={() => router.push(`/rooms/${room.id}`)}
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        Xem
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEdit(room)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-destructive hover:text-destructive bg-transparent "
+                        onClick={() => {
+                          setSelectedRoom(room);
+                          setShowDeleteDialog(true);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    {/* <div className="relative h-48 bg-muted">
                     <img
                       src={
                         room.hinhAnh ||
@@ -288,8 +379,8 @@ export default function AdminRoomsPage() {
                       alt={room.tenPhong}
                       className="w-full h-full object-cover"
                     />
-                  </div>
-                  <CardContent className="p-4">
+                  </div> */}
+                    {/* <CardContent className="p-4">
                     <h3 className="font-semibold text-lg mb-2 line-clamp-1">{room.tenPhong}</h3>
                     <p className="text-2xl font-bold text-primary mb-3">${room.giaTien} / đêm</p>
                     <div className="flex gap-2">
@@ -317,14 +408,17 @@ export default function AdminRoomsPage() {
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <div className="col-span-full text-center py-16">
-                <p className="text-lg text-muted-foreground">Không tìm thấy phòng nào</p>
-              </div>
-            )}
+                  </CardContent> */}
+                  </TableRow>
+                ))
+              ) : (
+                <div className="col-span-full text-center py-16">
+                  <p className="text-lg text-muted-foreground">
+                    Không tìm thấy phòng nào
+                  </p>
+                </div>
+              )}
+            </TableBody>
           </div>
 
           {totalPages > 1 && (
@@ -335,10 +429,14 @@ export default function AdminRoomsPage() {
                     <PaginationPrevious
                       href="#"
                       onClick={(e) => {
-                        e.preventDefault()
-                        if (currentPage > 1) setCurrentPage(currentPage - 1)
+                        e.preventDefault();
+                        if (currentPage > 1) setCurrentPage(currentPage - 1);
                       }}
-                      className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      className={
+                        currentPage === 1
+                          ? "pointer-events-none opacity-50"
+                          : "cursor-pointer"
+                      }
                     />
                   </PaginationItem>
 
@@ -352,8 +450,8 @@ export default function AdminRoomsPage() {
                         <PaginationLink
                           href="#"
                           onClick={(e) => {
-                            e.preventDefault()
-                            setCurrentPage(page as number)
+                            e.preventDefault();
+                            setCurrentPage(page as number);
                           }}
                           isActive={currentPage === page}
                           className="cursor-pointer"
@@ -368,10 +466,15 @@ export default function AdminRoomsPage() {
                     <PaginationNext
                       href="#"
                       onClick={(e) => {
-                        e.preventDefault()
-                        if (currentPage < totalPages) setCurrentPage(currentPage + 1)
+                        e.preventDefault();
+                        if (currentPage < totalPages)
+                          setCurrentPage(currentPage + 1);
                       }}
-                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      className={
+                        currentPage === totalPages
+                          ? "pointer-events-none opacity-50"
+                          : "cursor-pointer"
+                      }
                     />
                   </PaginationItem>
                 </PaginationContent>
@@ -380,7 +483,8 @@ export default function AdminRoomsPage() {
           )}
 
           <p className="text-sm text-muted-foreground mt-6">
-            Tổng số: {filteredRooms.length} phòng | Trang {currentPage} / {totalPages}
+            Tổng số: {filteredRooms.length} phòng | Trang {currentPage} /{" "}
+            {totalPages}
           </p>
         </main>
       </div>
@@ -400,7 +504,9 @@ export default function AdminRoomsPage() {
                   <Input
                     id="create-tenPhong"
                     value={formData.tenPhong}
-                    onChange={(e) => setFormData({ ...formData, tenPhong: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, tenPhong: e.target.value })
+                    }
                     required
                   />
                 </div>
@@ -411,7 +517,12 @@ export default function AdminRoomsPage() {
                     type="number"
                     min="0"
                     value={formData.giaTien}
-                    onChange={(e) => setFormData({ ...formData, giaTien: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        giaTien: Number(e.target.value),
+                      })
+                    }
                     required
                   />
                 </div>
@@ -425,7 +536,12 @@ export default function AdminRoomsPage() {
                     type="number"
                     min="1"
                     value={formData.khach}
-                    onChange={(e) => setFormData({ ...formData, khach: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        khach: Number(e.target.value),
+                      })
+                    }
                     required
                   />
                 </div>
@@ -436,7 +552,12 @@ export default function AdminRoomsPage() {
                     type="number"
                     min="0"
                     value={formData.phongNgu}
-                    onChange={(e) => setFormData({ ...formData, phongNgu: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        phongNgu: Number(e.target.value),
+                      })
+                    }
                     required
                   />
                 </div>
@@ -447,7 +568,12 @@ export default function AdminRoomsPage() {
                     type="number"
                     min="0"
                     value={formData.giuong}
-                    onChange={(e) => setFormData({ ...formData, giuong: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        giuong: Number(e.target.value),
+                      })
+                    }
                     required
                   />
                 </div>
@@ -458,7 +584,12 @@ export default function AdminRoomsPage() {
                     type="number"
                     min="0"
                     value={formData.phongTam}
-                    onChange={(e) => setFormData({ ...formData, phongTam: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        phongTam: Number(e.target.value),
+                      })
+                    }
                     required
                   />
                 </div>
@@ -469,7 +600,9 @@ export default function AdminRoomsPage() {
                 <Textarea
                   id="create-moTa"
                   value={formData.moTa}
-                  onChange={(e) => setFormData({ ...formData, moTa: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, moTa: e.target.value })
+                  }
                   rows={3}
                   required
                 />
@@ -481,7 +614,12 @@ export default function AdminRoomsPage() {
                   id="create-maViTri"
                   className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   value={formData.maViTri}
-                  onChange={(e) => setFormData({ ...formData, maViTri: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      maViTri: Number(e.target.value),
+                    })
+                  }
                   required
                 >
                   {locations.map((loc) => (
@@ -498,7 +636,9 @@ export default function AdminRoomsPage() {
                   id="create-hinhAnh"
                   type="url"
                   value={formData.hinhAnh}
-                  onChange={(e) => setFormData({ ...formData, hinhAnh: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, hinhAnh: e.target.value })
+                  }
                   placeholder="https://example.com/image.jpg"
                 />
               </div>
@@ -520,10 +660,17 @@ export default function AdminRoomsPage() {
                     <div key={key} className="flex items-center space-x-2">
                       <Checkbox
                         id={`create-${key}`}
-                        checked={formData[key as keyof PhongViewModel] as boolean}
-                        onCheckedChange={(checked) => setFormData({ ...formData, [key]: checked })}
+                        checked={
+                          formData[key as keyof PhongViewModel] as boolean
+                        }
+                        onCheckedChange={(checked) =>
+                          setFormData({ ...formData, [key]: checked })
+                        }
                       />
-                      <Label htmlFor={`create-${key}`} className="cursor-pointer">
+                      <Label
+                        htmlFor={`create-${key}`}
+                        className="cursor-pointer"
+                      >
                         {label}
                       </Label>
                     </div>
@@ -532,11 +679,17 @@ export default function AdminRoomsPage() {
               </div>
             </div>
             <DialogFooter className="mt-6">
-              <Button type="button" variant="outline" onClick={() => setShowCreateDialog(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowCreateDialog(false)}
+              >
                 Hủy
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isSubmitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 Tạo
               </Button>
             </DialogFooter>
@@ -559,7 +712,9 @@ export default function AdminRoomsPage() {
                   <Input
                     id="edit-tenPhong"
                     value={formData.tenPhong}
-                    onChange={(e) => setFormData({ ...formData, tenPhong: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, tenPhong: e.target.value })
+                    }
                     required
                   />
                 </div>
@@ -570,7 +725,12 @@ export default function AdminRoomsPage() {
                     type="number"
                     min="0"
                     value={formData.giaTien}
-                    onChange={(e) => setFormData({ ...formData, giaTien: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        giaTien: Number(e.target.value),
+                      })
+                    }
                     required
                   />
                 </div>
@@ -584,7 +744,12 @@ export default function AdminRoomsPage() {
                     type="number"
                     min="1"
                     value={formData.khach}
-                    onChange={(e) => setFormData({ ...formData, khach: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        khach: Number(e.target.value),
+                      })
+                    }
                     required
                   />
                 </div>
@@ -595,7 +760,12 @@ export default function AdminRoomsPage() {
                     type="number"
                     min="0"
                     value={formData.phongNgu}
-                    onChange={(e) => setFormData({ ...formData, phongNgu: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        phongNgu: Number(e.target.value),
+                      })
+                    }
                     required
                   />
                 </div>
@@ -606,7 +776,12 @@ export default function AdminRoomsPage() {
                     type="number"
                     min="0"
                     value={formData.giuong}
-                    onChange={(e) => setFormData({ ...formData, giuong: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        giuong: Number(e.target.value),
+                      })
+                    }
                     required
                   />
                 </div>
@@ -617,7 +792,12 @@ export default function AdminRoomsPage() {
                     type="number"
                     min="0"
                     value={formData.phongTam}
-                    onChange={(e) => setFormData({ ...formData, phongTam: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        phongTam: Number(e.target.value),
+                      })
+                    }
                     required
                   />
                 </div>
@@ -628,7 +808,9 @@ export default function AdminRoomsPage() {
                 <Textarea
                   id="edit-moTa"
                   value={formData.moTa}
-                  onChange={(e) => setFormData({ ...formData, moTa: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, moTa: e.target.value })
+                  }
                   rows={3}
                   required
                 />
@@ -640,7 +822,12 @@ export default function AdminRoomsPage() {
                   id="edit-maViTri"
                   className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   value={formData.maViTri}
-                  onChange={(e) => setFormData({ ...formData, maViTri: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      maViTri: Number(e.target.value),
+                    })
+                  }
                   required
                 >
                   {locations.map((loc) => (
@@ -657,7 +844,9 @@ export default function AdminRoomsPage() {
                   id="edit-hinhAnh"
                   type="url"
                   value={formData.hinhAnh}
-                  onChange={(e) => setFormData({ ...formData, hinhAnh: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, hinhAnh: e.target.value })
+                  }
                   placeholder="https://example.com/image.jpg"
                 />
               </div>
@@ -679,8 +868,12 @@ export default function AdminRoomsPage() {
                     <div key={key} className="flex items-center space-x-2">
                       <Checkbox
                         id={`edit-${key}`}
-                        checked={formData[key as keyof PhongViewModel] as boolean}
-                        onCheckedChange={(checked) => setFormData({ ...formData, [key]: checked })}
+                        checked={
+                          formData[key as keyof PhongViewModel] as boolean
+                        }
+                        onCheckedChange={(checked) =>
+                          setFormData({ ...formData, [key]: checked })
+                        }
                       />
                       <Label htmlFor={`edit-${key}`} className="cursor-pointer">
                         {label}
@@ -691,11 +884,17 @@ export default function AdminRoomsPage() {
               </div>
             </div>
             <DialogFooter className="mt-6">
-              <Button type="button" variant="outline" onClick={() => setShowEditDialog(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowEditDialog(false)}
+              >
                 Hủy
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isSubmitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 Cập nhật
               </Button>
             </DialogFooter>
@@ -709,19 +908,26 @@ export default function AdminRoomsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Xác nhận xóa</AlertDialogTitle>
             <AlertDialogDescription>
-              Bạn có chắc chắn muốn xóa phòng <strong>{selectedRoom?.tenPhong}</strong>? Hành động này không thể hoàn
-              tác.
+              Bạn có chắc chắn muốn xóa phòng{" "}
+              <strong>{selectedRoom?.tenPhong}</strong>? Hành động này không thể
+              hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Hủy</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteRoom} disabled={isSubmitting} className="bg-destructive">
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <AlertDialogAction
+              onClick={handleDeleteRoom}
+              disabled={isSubmitting}
+              className="bg-destructive"
+            >
+              {isSubmitting && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Xóa
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  )
+  );
 }

@@ -90,7 +90,7 @@ export default function BookingsPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      <main className="flex-1 container px-4 py-8">
+      <main className="flex-1 container px-4 py-8 mx-auto">
         <h1 className="text-4xl font-bold mb-8">Đặt phòng của tôi</h1>
 
         {error && (
